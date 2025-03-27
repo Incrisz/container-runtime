@@ -1,27 +1,27 @@
-# 1
+# STEP 1
 
 sudo apt update
 sudo apt install -y iproute2 cgroup-tools debootstrap
 sudo debootstrap --arch=amd64 noble /mycontainer http://archive.ubuntu.com/ubuntu/   # ubuntu24.04
 
 
-# 2
+# STEP 2
 sudo mount --bind /proc /mycontainer/proc
 sudo mount --bind /sys /mycontainer/sys
 sudo mount --bind /dev /mycontainer/dev
 
 
-# 3
+# STEP 3
 sudo unshare --pid --fork --mount-proc /bin/bash
 ps aux
 
 
-# 4
+#STEP  4
 sudo unshare --mount --fork chroot /mycontainer 
 mount
 
 
-# 5
+# STEP 5
 sudo ip netns add mycontainer
 sudo ip link add veth-host type veth peer name veth-container
 sudo ip link set veth-container netns mycontainer
@@ -31,30 +31,30 @@ sudo ip netns exec mycontainer ip addr add 192.168.1.2/24 dev veth-container
 sudo ip netns exec mycontainer ip link set veth-container up
 
 
-# 6
+# STEP 6
 sudo mkdir /sys/fs/cgroup/mycontainer
 echo "+cpu +memory" | sudo tee /sys/fs/cgroup/cgroup.subtree_control
 echo "500000 1000000" | sudo tee /sys/fs/cgroup/mycontainer/cpu.max
 echo "256M" | sudo tee /sys/fs/cgroup/mycontainer/memory.max
 
 
-# 7
+#STEP  7
 sudo chroot /mycontainer adduser --disabled-password testuser
 
-# 8
+# STEP 8
 chroot /mycontainer /bin/bash
 adduser --disabled-password testuser
 exit
 
 
 
-# 9
+# STEP 9
 
 sudo chroot /mycontainer
 apt update
 apt install -y python3
 
-# 10
+# STEP 10
 cd /home/testuser/
 vi /home/testuser/server.py
 
@@ -69,7 +69,7 @@ HTTPServer(("", 8000), Handler).serve_forever()
 
 
 
-# then
+# STEP 11
 chown 1000:1000 /home/testuser/server.py
 
 

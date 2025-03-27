@@ -33,6 +33,9 @@ sudo ip link set veth-host up
 sudo ip netns exec mycontainer ip addr add 192.168.1.2/24 dev veth-container
 sudo ip netns exec mycontainer ip link set veth-container up
 
+# Network Security & Outbound Rules
+sudo ip netns exec mycontainer iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+sudo ip netns exec mycontainer iptables -A OUTPUT -j DROP
 
 # STEP 6:
 # Create a cgroup (mycontainer) and set CPU/memory limits (50% CPU, 256MB RAM max).
@@ -40,11 +43,15 @@ sudo mkdir /sys/fs/cgroup/mycontainer
 echo "+cpu +memory" | sudo tee /sys/fs/cgroup/cgroup.subtree_control
 echo "500000 1000000" | sudo tee /sys/fs/cgroup/mycontainer/cpu.max
 echo "256M" | sudo tee /sys/fs/cgroup/mycontainer/memory.max
+echo "8:0 wbps=1048576" | sudo tee /sys/fs/cgroup/mycontainer/io.max
 
 
 # STEP 7:
 # Use chroot to add a restricted user (testuser) inside the container.
 sudo chroot /mycontainer adduser --disabled-password testuser
+
+# User Namespace & Security Hardening
+sudo unshare --user --map-root-user chroot /mycontainer /bin/bash
 
 # STEP 8:
 # Alternative method: Enter the container via chroot and manually add testuser.

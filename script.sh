@@ -22,6 +22,8 @@ sudo mkdir -p /sys/fs/cgroup/mycontainer
 echo "+cpu +memory" | sudo tee /sys/fs/cgroup/cgroup.subtree_control
 echo "500000 1000000" | sudo tee /sys/fs/cgroup/mycontainer/cpu.max
 echo "256M" | sudo tee /sys/fs/cgroup/mycontainer/memory.max
+echo "8:0 wbps=1048576" | sudo tee /sys/fs/cgroup/mycontainer/io.max
+
 
 # Step 3: Setup networking
 echo "Setting up networking..."

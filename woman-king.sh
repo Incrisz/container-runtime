@@ -12,7 +12,13 @@ sudo mount --bind /proc /mycontainer/proc
 sudo mount --bind /sys /mycontainer/sys
 sudo mount --bind /dev /mycontainer/dev
 sudo mount --bind /dev/pts /mycontainer/dev/pts
-sudo mount -t devpts devpts /mycontainer/dev/pts
+# sudo mount -t devpts devpts /mycontainer/dev/pts
+
+
+sudo mount -t tmpfs tmpfs /mycontainer/dev
+sudo mknod /mycontainer/dev/null c 1 3
+sudo mknod /mycontainer/dev/zero c 1 5
+sudo chmod 666 /mycontainer/dev/null /mycontainer/dev/zero
 
 
 # STEP 3:  On the Host Filesystem
@@ -88,7 +94,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Hello from my woman king!")
+        self.wfile.write(b"Hello from incrisz container!")
 HTTPServer(("", 8000), Handler).serve_forever()
 
 
@@ -103,3 +109,25 @@ chown 1000:1000 /home/testuser/server.py
 exit
 
 sudo unshare --pid --mount --user --map-root-user --fork --mount-proc ip netns exec mycontainer chroot /mycontainer /bin/bash -c "su - testuser -c 'python3 /home/testuser/server.py &' > /tmp/server.log 2>&1"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sudo unshare --pid --mount --user --map-root-user --fork --mount-proc ip netns exec mycontainer chroot /mycontainer /bin/bash -c "su - hnguser -c '/home/hnguser/seccomp_filter &' > /tmp/server.log 2>&1"
